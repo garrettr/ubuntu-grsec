@@ -232,18 +232,6 @@ sudo dpkg -i *.deb
 sudo update-grub
 ```
 
-### Disable conflicting jail restrictions on the App server
-
-The following commands disable conflicting jail restrictions and should
-**only** be run on the App server.
-
-```
-sudo su -
-echo "kernel.grsecurity.chroot_caps = 0" >> /etc/sysctl.conf
-echo "kernel.grsecurity.chroot_deny_unix = 0" >> /etc/sysctl.conf
-sysctl -p /etc/sysctl.conf
-```
-
 ### Configure App and Monitor servers to use new kernel by default
 
 Set the new kernel to be the default on both servers. Start by finding
