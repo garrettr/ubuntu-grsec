@@ -62,6 +62,15 @@ gpg --import spender-gpg-key.asc
 gpg --keyserver pool.sks-keyservers.net --recv-key 647F28654894E3BD457199BE38DBBDC86092693E
 ```
 
+Verify that the keys you have received are authentic by checking the fingerprint for each one:
+
+```
+gpg --with-fingerprint spender-gpg-key.asc
+gpg --fingerprint 647F28654894E3BD457199BE38DBBDC86092693E
+```
+
+Bradley Spengler should have a fingerprint of "DE94 52CE 46F4 2094 907F 108B 44D1 C0F8 2525 FE49" and Greg Kroah-Hartman should have a fingerprint of "647F 2865 4894 E3BD 4571 99BE 38DB BDC8 6092 693E". If either of the fingerprints do not match what you see here, please get in touch at securedrop@freedom.press. 
+
 At this point, you should disconnect this server from the Internet and
 treat it as an offline (air-gapped) server.
 
