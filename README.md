@@ -1,10 +1,7 @@
 Ubuntu kernel with grsecurity
 =============================
 
-This guide outlines the steps required to compile a kernel for [Ubuntu
-Server 12.04 LTS (Precise Pangolin)](http://releases.ubuntu.com/12.04/)
-with [Grsecurity](https://grsecurity.net/), specifically for use with
-[SecureDrop](https://pressfreedomfoundation.org/securedrop). At the end
+This guide outlines the steps required to compile a kernel for [Ubuntu Server 14.04 (Trusty Tahr)](http://releases.ubuntu.com/14.04/) with [Grsecurity](https://grsecurity.net/), specifically for use with [SecureDrop](https://pressfreedomfoundation.org/securedrop). At the end
 of this guide, you will have two Debian packages that you transfer to
 the *App* and *Monitor* servers.
 
@@ -250,7 +247,7 @@ sudo update-grub
 sudo reboot
 ```
 
-After reboot, verify the you booted the new kernel by running `uname -a`. Confirm the the `-grsec` kernel is the one shown. If it is not, double-check the value you set for `GRUB_DEFAULT` in the previous sed command.
+After reboot, verify the you booted the new kernel by running `uname -a`. Confirm that the `-grsec` kernel is the one shown. If it is not, double-check the value you set for `GRUB_DEFAULT` in the previous sed command.
 
 ### Test SecureDrop functionality
 
