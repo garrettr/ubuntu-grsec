@@ -2,7 +2,7 @@ Ubuntu kernel with grsecurity
 =============================
 
 This guide outlines the steps required to compile a kernel for [Ubuntu
-Server 12.04 LTS (Precise Pangolin)](http://releases.ubuntu.com/12.04/)
+Server 14.04 LTS (Trusty Tahr)](http://releases.ubuntu.com/14.04/)
 with [Grsecurity](https://grsecurity.net/), specifically for use with
 [SecureDrop](https://pressfreedomfoundation.org/securedrop). At the end
 of this guide, you will have two Debian packages that you transfer to
@@ -17,8 +17,7 @@ The steps in this guide assume you have the following set up and running:
  * An offline server running [Ubuntu Server 14.04 (Trusty
    Tahr)](http://releases.ubuntu.com/14.04/) that you use to compile the
 kernel
- * An online server running 12.04 or 14.04 that you use to download
-   package dependencies
+ * An online server that you use to download package dependencies
 
 The idea is that you will use the online server to download package
 dependencies, put the files on a USB stick and transfer them to the
@@ -95,7 +94,7 @@ wget https://grsecurity.net/stable/grsecurity-3.0-3.2.61-201407232156.patch.sig
 Download the Ubuntu kernel overlay.
 
 ```
-git clone git://kernel.ubuntu.com/ubuntu/ubuntu-precise.git
+git clone git://kernel.ubuntu.com/ubuntu/ubuntu-trusty.git
 ```
 
 Transfer all the files in the *grsec* directory from the online server
@@ -109,7 +108,7 @@ should have the following in your *grsec* directory.
 ```
 grsecurity-3.0-3.2.61-201407232156.patch	    spender-gpg-key.asc
 grsecurity-3.0-3.2.61-201407232156.patch.sig	ubuntu-package/
-linux-3.2.61.tar.sign				            ubuntu-precise/
+linux-3.2.61.tar.sign				            ubuntu-trusty/
 linux-3.2.61.tar.xz
 ```
 
@@ -119,8 +118,8 @@ Copy the required directories from the Ubuntu kernel overlay directory
 to the correct *ubuntu-package* directory.
 
 ```
-cp ubuntu-precise/debian/control-scripts/p* ubuntu-package/pkg/image/
-cp ubuntu-precise/debian/control-scripts/headers-postinst ubuntu-package/pkg/headers/
+cp ubuntu-trusty/debian/control-scripts/p* ubuntu-package/pkg/image/
+cp ubuntu-trusty/debian/control-scripts/headers-postinst ubuntu-package/pkg/headers/
 ```
 
 ### Verify the digital signatures
