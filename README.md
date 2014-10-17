@@ -25,8 +25,8 @@ offline server, then use the offline server to verify digital signatures
 and compile the new kernel.
 
 The current version of this document assumes you are compiling Linux
-kernel version *3.2.61* and Grsecurity version
-*3.0-3.2.61-201407232156*. When running commands that include filenames
+kernel version *3.14.21* and Grsecurity version
+*3.0-3.14.21-201410131959*. When running commands that include filenames
 and/or version numbers, make sure it all matches what you have on your
 server.
 
@@ -85,10 +85,10 @@ When downloading the Linux kernel and Grsecurity, make sure you get the
 long term stable versions and that the version numbers match up.
 
 ```
-wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.2.61.tar.xz
-wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.2.61.tar.sign
-wget https://grsecurity.net/stable/grsecurity-3.0-3.2.61-201407232156.patch
-wget https://grsecurity.net/stable/grsecurity-3.0-3.2.61-201407232156.patch.sig
+wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.14.21.tar.xz
+wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.14.21.tar.sign
+wget https://grsecurity.net/stable/grsecurity-3.0-3.14.21-201410131959.patch
+wget https://grsecurity.net/stable/grsecurity-3.0-3.14.21-201410131959.patch.sig
 ```
 
 Download the Ubuntu kernel overlay.
@@ -106,10 +106,10 @@ After moving the files from the online server to the offline server, you
 should have the following in your *grsec* directory.
 
 ```
-grsecurity-3.0-3.2.61-201407232156.patch	    spender-gpg-key.asc
-grsecurity-3.0-3.2.61-201407232156.patch.sig	ubuntu-package/
-linux-3.2.61.tar.sign				            ubuntu-trusty/
-linux-3.2.61.tar.xz
+grsecurity-3.0-3.14.21-201410131959.patch	    spender-gpg-key.asc
+grsecurity-3.0-3.14.21-201410131959.patch.sig	ubuntu-package/
+linux-3.14.21.tar.sign				            ubuntu-trusty/
+linux-3.14.21.tar.xz
 ```
 
 ### Gather the required files for the Ubuntu kernel overlay
@@ -127,14 +127,14 @@ cp ubuntu-trusty/debian/control-scripts/headers-postinst ubuntu-package/pkg/head
 Verify the digital signature for Grsecurity.
 
 ```
-gpg --verify grsecurity-3.0-3.2.61-201407232156.patch.sig
+gpg --verify grsecurity-3.0-3.14.21-201410131959.patch.sig
 ```
 
 Verify the digital signature for the Linux kernel.
 
 ```
-unxz linux-3.2.61.tar.xz
-gpg --verify linux-3.2.61.tar.sign
+unxz linux-3.14.21.tar.xz
+gpg --verify linux-3.14.21.tar.sign
 ```
 
 Do not move on to the next step until you have successfully verified both
@@ -146,9 +146,9 @@ server, re-download both the package and signature and try again.
 Extract the Linux kernel archive and apply the Grsecurity patch.
 
 ```
-tar -xf linux-3.2.61.tar
-cd linux-3.2.61/
-patch -p1 < ../grsecurity-3.0-3.2.61-201407232156.patch
+tar -xf linux-3.14.21.tar
+cd linux-3.14.21/
+patch -p1 < ../grsecurity-3.0-3.14.21-201410131959.patch
 ```
 
 ### Configure Grsecurity
@@ -195,8 +195,8 @@ When the build process is done, you will have the following Debian
 packages in the *grsec* directory:
 
 ```
-linux-headers-3.2.61-grsec_3.2.61-grsec-10.00.Custom_amd64.deb
-linux-image-3.2.61-grsec_3.2.61-grsec-10.00.Custom_amd64.deb
+linux-headers-3.14.21-grsec_3.2.61-grsec-10.00.Custom_amd64.deb
+linux-image-3.14.21-grsec_3.2.61-grsec-10.00.Custom_amd64.deb
 ```
 
 Put the packages on a USB stick and transfer them to the SecureDrop App
@@ -266,7 +266,7 @@ Copy the output and use it in the *sed* command below to set this kernel
 as the default.
 
 ```
-sudo sed -i "s/^GRUB_DEFAULT=.*$/GRUB_DEFAULT=\"2>Ubuntu, with Linux 3.2.61-grsec\"/" /etc/default/grub
+sudo sed -i "s/^GRUB_DEFAULT=.*$/GRUB_DEFAULT=\"2>Ubuntu, with Linux 3.14.21-grsec\"/" /etc/default/grub
 sudo update-grub
 sudo reboot
 ```
