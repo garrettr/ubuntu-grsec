@@ -1,23 +1,17 @@
 Ubuntu kernel with grsecurity
 =============================
 
-This guide outlines the steps required to compile a kernel for [Ubuntu
-Server 14.04 LTS (Trusty Tahr)](http://releases.ubuntu.com/14.04/)
-with [Grsecurity](https://grsecurity.net/), specifically for use with
-[SecureDrop](https://pressfreedomfoundation.org/securedrop). At the end
-of this guide, you will have two Debian packages that you transfer to
-the *App* and *Monitor* servers.
+This guide outlines the steps required to compile a kernel for [Ubuntu Server 14.04 (Trusty Tahr)](http://releases.ubuntu.com/14.04/) with [Grsecurity](https://grsecurity.net/), specifically for use with [SecureDrop](https://freedom.press/securedrop). At the end of this guide, you will have two Debian packages that you transfer to the *App* and *Monitor* servers.
 
 ## Before you begin
 
 The steps in this guide assume you have the following set up and running:
 
- * SecureDrop App and Monitor servers (see the [installation
-   guide](https://github.com/freedomofpress/securedrop/blob/develop/docs/install.md))
- * An offline server running [Ubuntu Server 14.04 (Trusty
-   Tahr)](http://releases.ubuntu.com/14.04/) that you use to compile the
-kernel
+ * SecureDrop App and Monitor servers (see the [installation guide](https://github.com/freedomofpress/securedrop/blob/develop/docs/install.md))
+ * An offline server running [Ubuntu Server 14.04 (Trusty Tahr)](http://releases.ubuntu.com/14.04/) that you use to compile the kernel
  * An online server that you use to download package dependencies
+
+Since SecureDrop is only supported on 64-bit platforms, make sure you download a 64-bit version of Ubuntu to build the kernel. The `.iso` filename will have an `-amd64` suffix.
 
 The idea is that you will use the online server to download package
 dependencies, put the files on a USB stick and transfer them to the
@@ -61,6 +55,15 @@ wget https://grsecurity.net/spender-gpg-key.asc
 gpg --import spender-gpg-key.asc
 gpg --keyserver pool.sks-keyservers.net --recv-key 647F28654894E3BD457199BE38DBBDC86092693E
 ```
+
+Verify that the keys you have received are authentic by checking the fingerprint for each one:
+
+```
+gpg --with-fingerprint spender-gpg-key.asc
+gpg --fingerprint 647F28654894E3BD457199BE38DBBDC86092693E
+```
+
+Bradley Spengler should have a fingerprint of "DE94 52CE 46F4 2094 907F 108B 44D1 C0F8 2525 FE49" and Greg Kroah-Hartman should have a fingerprint of "647F 2865 4894 E3BD 4571 99BE 38DB BDC8 6092 693E". If either of the fingerprints do not match what you see here, please get in touch at securedrop@freedom.press.
 
 At this point, you should disconnect this server from the Internet and
 treat it as an offline (air-gapped) server.
@@ -167,10 +170,10 @@ correct options.
      * Press *Y* to include it
      * Set *Configuration Method* to *Automatic*
      * Set *Usage Type* to *Server* (default)
-     * Set *Virtualization Type* to *None* (default) 
+     * Set *Virtualization Type* to *None* (default)
      * Set *Required Priorities* to *Security*
      * Select *Exit*
-   * Select *Exit* 
+   * Select *Exit*
  * Select *Exit*
  * Select *Yes* to save
 
@@ -187,8 +190,8 @@ Compile the kernel with the Ubuntu overlay. Note that this step may fail
 if you are using a small VPS/virtual machine.
 
 ```
-make-kpkg clean  
-sudo make-kpkg --initrd --overlay-dir=../ubuntu-package kernel_image kernel_headers 
+make-kpkg clean
+sudo make-kpkg --initrd --overlay-dir=../ubuntu-package kernel_image kernel_headers
 ```
 
 When the build process is done, you will have the following Debian
@@ -213,23 +216,11 @@ as Grsecurity.
 
 ```
 sudo apt-get install paxctl
-sudo paxctl -Cpm /usr/sbin/grub-probe  
-sudo paxctl -Cpm /usr/sbin/grub-mkdevicemap  
-sudo paxctl -Cpm /usr/sbin/grub-setup  
-sudo paxctl -Cpm /usr/bin/grub-script-check  
-sudo paxctl -Cpm /usr/bin/grub-mount  
-```
-
-### Ensure the web server can start on the App server
-
-The following commands ensure the web server can start and should
-**only** be run on the App server.
-
-```
-sudo schroot -a -u root --directory / service apache2 stop
-sudo paxctl -cm /var/chroot/source/usr/sbin/apache2
-sudo paxctl -cm /var/chroot/document/usr/sbin/apache2
-sudo schroot -a -u root --directory / service apache2 start
+sudo paxctl -Cpm /usr/sbin/grub-probe
+sudo paxctl -Cpm /usr/sbin/grub-mkdevicemap
+sudo paxctl -Cpm /usr/sbin/grub-setup
+sudo paxctl -Cpm /usr/bin/grub-script-check
+sudo paxctl -Cpm /usr/bin/grub-mount
 ```
 
 ### Install new kernel on both App and Monitor servers
@@ -241,25 +232,13 @@ sudo dpkg -i *.deb
 sudo update-grub
 ```
 
-### Disable conflicting jail restrictions on the App server
-
-The following commands disable conflicting jail restrictions and should
-**only** be run on the App server.
-
-```
-sudo su -
-echo "kernel.grsecurity.chroot.caps = 0" >> /etc/sysctl.conf
-echo "kernel.grsecurity.chroot.deny.unix = 0" >> /etc/sysctl.conf
-sysctl -p /etc/sysctl.conf
-```
-
 ### Configure App and Monitor servers to use new kernel by default
 
 Set the new kernel to be the default on both servers. Start by finding
-the exact menuentry name for the kernel.
+the exact menuentry name for the new kernel.
 
 ```
-grep menuentry /boot/grub/grub.cfg
+grep menuentry /boot/grub/grub.cfg | cut -d "'" -f2 | grep "grsec$"
 ```
 
 Copy the output and use it in the *sed* command below to set this kernel
@@ -270,6 +249,8 @@ sudo sed -i "s/^GRUB_DEFAULT=.*$/GRUB_DEFAULT=\"2>Ubuntu, with Linux 3.14.21-grs
 sudo update-grub
 sudo reboot
 ```
+
+After reboot, verify the you booted the new kernel by running `uname -a`. Confirm that the `-grsec` kernel is the one shown. If it is not, double-check the value you set for `GRUB_DEFAULT` in the previous sed command.
 
 ### Test SecureDrop functionality
 
